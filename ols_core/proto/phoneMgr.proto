@@ -1,0 +1,107 @@
+syntax='proto3';
+import "google/protobuf/empty.proto";
+import "taskService.proto";
+option java_multiple_files = true;
+option java_outer_classname = "PhoneServiceProto";
+option java_package = "com.example.virtuallyphone.grpc";
+
+message DeviceTaskResult {
+  bool isFinished = 1;
+  int32 maxRound = 2;
+  //当前存在的最大轮次
+  int32 round = 3;
+  string operator = 4;
+  repeated DeviceDataStatus deviceDataStatus = 5;
+}
+
+message DeviceDataStatus {
+  // 数据名
+  string name = 1;
+  // 比如['High', 'Low']，设备档次
+  repeated string deviceType = 2;
+  // 对应于设备档次的成功次数，如[5, 5]
+  repeated int32 successNum = 3;
+  // 对应于设备档数的失败次数，如[1, 1]
+  repeated int32 failedNum = 4;
+}
+
+
+message AllUsersDeviceAvailableResource {
+  repeated UserDeviceAvailableResource userDeviceAvailableResource = 1;
+}
+
+message UserDeviceAvailableResource {
+  string userID = 1;
+  repeated DeviceResourceInfo deviceResourceInfo = 2;
+}
+
+message DeviceResource {
+  string taskID = 1; //任务ID
+  string userID = 2; //给第三方真机侧预留
+  repeated DeviceResourceInfo deviceResourceInfo = 3;
+}
+
+message DeviceResourceInfo {
+  string phoneType= 1; //类别，高端、中端、低端、第三方资源或不区分
+  int32 num = 2;
+}
+
+message ActionStatus{
+  bool isSuccess = 1;
+}
+
+service TaskManager{
+  //提交任务
+  rpc submitTask(DeviceTaskConfig) returns (ActionStatus);
+  //查询资源
+  rpc getDeviceAvailableResource(google.protobuf.Empty) returns (AllUsersDeviceAvailableResource);
+  //冻结资源
+  rpc requestDeviceResource(DeviceResource) returns (ActionStatus);
+  //释放资源
+  rpc releaseDeviceResource(TaskID) returns (ActionStatus);
+  //任务停止
+  rpc stopDevice(TaskID) returns (ActionStatus);
+  //查询任务状态
+  rpc getDeviceTaskStatus(TaskID) returns (DeviceTaskResult);
+}
+
+message MSPDevicesConfig{
+  repeated MSPDeviceInfo mspDeviceInfo= 1;
+}
+
+message MSPDeviceInfo{
+  //设备ID
+  string deviceID= 1;
+  //设备IP
+  string deviceIP= 2;
+  //设备端口号
+  string devicePort= 3;
+  //设备服务器地址
+  string pubNetIP = 4;
+  //设备服务器端口
+  string pubNetPort= 5;
+}
+
+//设备信息列表
+message DevicesInfo {
+  repeated DeviceInfo deviceInfo = 1;
+}
+
+//设备详细信息
+message DeviceInfo {
+  //设备序列号
+  string serialNumber = 1;
+  //设备型号
+  string model = 2;
+  //设备CPU核心数
+  int32 cpuCoreNumber = 3;
+  //设备内存
+  int32 memory = 4;
+}
+
+service PhoneManager{
+  //连接MSP真机池
+  rpc connectMSPDevices(MSPDevicesConfig) returns (google.protobuf.Empty);
+  //获取本地连接设备信息
+  rpc getLocalDeviceResource(google.protobuf.Empty) returns (DevicesInfo);
+}

@@ -1,0 +1,20 @@
+################# For TaskManager #######################
+# grpc service
+grpc_service_address: "deviceflow-service:50051"
+
+
+################## For DeviceFlow itself #################
+port: "50051"
+max_workers: 10
+
+# Pulsar server
+shelfroom_url: 'pulsar://pulsar-mini-proxy.pulsar'
+shelfroom_namespace: "persistent://public/shelf_room"
+
+# Source Pulsar
+source_url: "pulsar://pulsar-mini-proxy.pulsar"
+source_topic: "persistent://public/default/deviceflow_inbound"
+
+# Source Websocket
+source_websocket_url: "ws://pulsar-mini-proxy.pulsar:6650/ws/v2/producer/persistent/public/default/deviceflow_inbound"
+

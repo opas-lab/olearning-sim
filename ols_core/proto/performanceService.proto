@@ -1,0 +1,6 @@
+syntax='proto3';
+import "taskService.proto";
+
+service PerformanceMgr {
+  rpc commitJob(TaskConfig) returns (OperationStatus);
+}

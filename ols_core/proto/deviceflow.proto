@@ -1,0 +1,72 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+
+package deviceflow;
+
+message NotifyRequest {
+    string task_id = 1;
+    string routing_key = 2;
+    OutboundService outbound_service = 3;
+    string strategy = 4;
+    string compute_resource = 5;
+}
+
+message NofifyCompleteRequest {
+    string task_id = 1;
+    string routing_key = 2;
+    string compute_resource = 3;
+}
+
+message OutboundService {
+    PulsarClient pulsar_client = 1;
+    Websocket websocket = 2;
+}
+
+message PulsarClient {
+    string url = 1;
+    string topic = 2;
+}
+
+message Websocket {
+    string url = 1;
+}
+
+message OperationResponse {
+    bool is_success = 1;
+}
+
+message TaskInfo {
+  repeated string total_compute_resources = 1;
+}
+
+message RegisterRequest {
+  string task_id = 1;
+  repeated string total_compute_resources = 2;
+}
+
+message UnRegisterRequest {
+  string task_id = 1;
+}
+
+message TotalComputeResourcesRequest {
+  string task_id = 1;
+}
+
+message TotalComputeResourcesResponse {
+  repeated string total_compute_resources = 1;
+}
+
+message CheckDeviceflowDispatchRequest {
+  string task_id = 1;
+}
+
+service TaskOperatorOrientedDeviceFlow {
+    rpc GetDeviceflowPulsarClient(google.protobuf.Empty) returns (PulsarClient);
+    rpc GetDeviceflowWebsocket(google.protobuf.Empty) returns (Websocket);
+    rpc NotifyStart(NotifyRequest) returns (OperationResponse);
+    rpc NotifyComplete(NofifyCompleteRequest) returns (OperationResponse);
+    rpc RegisterTask(RegisterRequest) returns (OperationResponse);
+    rpc UnRegisterTask(UnRegisterRequest) returns (OperationResponse);
+    rpc GetTotalComputeResources(TotalComputeResourcesRequest) returns (TotalComputeResourcesResponse);
+    rpc CheckDeviceflowDispatchFinished(CheckDeviceflowDispatchRequest) returns (OperationResponse);
+}

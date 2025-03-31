@@ -1,0 +1,38 @@
+syntax='proto3';
+import "google/protobuf/empty.proto";
+
+message RayClusterActResponse {
+    bool ok = 1;
+}
+
+message RayClusterParam {
+    string k8s_namespace = 1;
+    string ray_label = 2;
+}
+
+message RayClusterQueryResult {
+    string json_data = 1;
+}
+
+message RayClusterModifyParam {
+    string k8s_namespace = 1;
+    string ray_name = 2;
+    string ray_label = 3;
+    int32 worker_min_replicas = 4;
+    int32 worker_replicas = 5;
+    int32 worker_max_replicas = 6;
+}
+
+service RayClusterMgr {
+  // create ray cluster 
+  rpc createRayCluster(google.protobuf.Empty) returns  (RayClusterActResponse);
+
+  // delete ray cluster
+  rpc deleteRayCluster(RayClusterParam) returns (RayClusterActResponse);
+
+  // modify ray cluster
+  rpc modifyRayCluster(RayClusterModifyParam) returns (RayClusterActResponse);
+
+  // query ray cluster
+  rpc queryRayCluster(RayClusterParam) returns (RayClusterQueryResult);
+}

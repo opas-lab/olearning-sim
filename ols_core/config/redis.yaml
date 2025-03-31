@@ -1,0 +1,4 @@
+host: ${YOUR_REDIS_IP} 
+password: ${YOUR_REDIS_PASSWORD}
+port: 6379
+list_key: 'taskIds'

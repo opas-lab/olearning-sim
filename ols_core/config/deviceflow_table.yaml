@@ -1,0 +1,6 @@
+host: "mysql-service"
+user: "root"
+password: ${YOUR_MYSQL_SECRET}
+port: 3306
+database: "virtually_phone_DB"
+table: "deviceflow_table"
