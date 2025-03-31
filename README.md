@@ -23,6 +23,7 @@ The architecture diagram is shown below.
 ![arch](./figs/sim_arch.png)
 
 ## Demonstration of Olearning-Sim
+[![demo_video](https://img.youtube.com/vi/F63BMyf9Q1c/0.jpg)](https://www.youtube.com/watch?v=F63BMyf9Q1c)
 
 
 
@@ -30,11 +31,35 @@ The architecture diagram is shown below.
 
 ## News
 - [30-03-2025] We release Olearning Simulator v0.1.0! 
-- [28-03-2025] Our paper *SimDC: A High-Fidelity Device Simulation
-Platform for Device-Cloud Collaborative Computing* has been accepted by *ICDCS2025* ✿✿ヽ(°▽°)ノ✿
+- [28-03-2025] Our paper [*SimDC: A High-Fidelity Device Simulation
+Platform for Device-Cloud Collaborative Computing*](https://arxiv.org/abs/2503.22288) has been accepted by *ICDCS2025* ✿✿ヽ(°▽°)ノ✿
+
+## Modules In Olearning-Sim
+###  Core Module
 
 
-## Code Structure
+**taskmgr**    ：   Task Management Module
+
+
+**resmgr**      ：   Resource Management Module
+
+
+**deviceflow**：  Device Flow Module
+
+
+### Base Functional Module
+
+
+**kind+k8s** ：A lightweight K8s foundation, similar to Minikube
+
+
+**ray cluster**    ： KubeRay Cluster, Integrated into Kubernetes (K8s)
+
+
+**mysql**      ： Business Database, Integrated into Kubernetes (K8s)
+
+
+**pulsar**      ： Pulsar Communication Component, Integrated into Kubernetes (K8s)
 
 ## Quick Start
 
@@ -53,41 +78,11 @@ mem >= 32G
 
 We should deploy the following  models to k8s.
 
-#####  **Business Module** 
 
-
-**taskmgr**    ：   Task Management Module
-
-
-**resmgr**      ：   Resource Management Module
-
-
-**deviceflow**：  Device Flow Module
-
-
-##### **Functional Module**
-
-
-**kind+k8s** ：A lightweight K8s foundation, similar to Minikube
-
-
-**ray cluster**    ： KubeRay Cluster, Integrated into Kubernetes (K8s)
-
-
-**mysql**      ： Business Database, Integrated into Kubernetes (K8s)
-
-
-**pulsar**      ： Pulsar Communication Component, Integrated into Kubernetes (K8s)
-
-
-
-
-### Step1：Models deployments
-
-#### First: prepare environments（Kind + k8s）
+### Step1： prepare environments（Kind + k8s）
 if you have K8s environments you can jump this step.
 
-##### Install 
+#### Install 
 
 Turn off Swap
 
@@ -129,7 +124,7 @@ Docker is already installed in the default environment.
 
 
 
-##### Set up a multi-node Kubernetes cluster using Kind
+#### Set up a multi-node Kubernetes cluster using Kind
 
 vim kind-example-config.yaml
 
@@ -217,9 +212,9 @@ The output indicates that the micro K8s + Kind environment setup is successful.
 
 
 
-#### Second: Install Ray cluster
+### Step2： Install Ray cluster
 
-##### Install kuberay
+#### Install kuberay
 
 ```
 ! helm repo add kuberay https://ray-project.github.io/kuberay-helm/
@@ -237,7 +232,7 @@ Deploy a kuberay
          ! watch -n 1 kubectl get pod
 ```
 
-##### Build Ray cluster docker image
+#### Build Ray cluster docker image
 
 You can build the image based on the following Dockerfile.
 
@@ -352,7 +347,7 @@ Build the image based on the Dockerfile and load it into the Kind cluster.
     kind load docker-image testhub.baymax.oppoer.me/80390594/olearning-simulator/opporay:0.2.6
 ```
 
-##### Deploy a Ray cluster
+#### Deploy a Ray cluster
 
 "Deploy a Ray cluster based on the YAML file
 
@@ -467,9 +462,9 @@ oppo-simulator-worker-small-group-plpvp   1/1     Running   0
 
 The Ray cluster is now successfully deployed.
 
-#### mysql 
+### Step3：Deploy mysql on k8s
 
-##### Build image
+#### Build image
 
 vim Dockfile
 
@@ -489,7 +484,7 @@ EXPOSE 3306
 
 The relevant scripts are as follows：
 
- [ 02_import_data.sh ]() 
+[ 02_import_data.sh ]() 
 
 [ 01_create_db.sql ]() 
 
@@ -504,7 +499,7 @@ Build the image and load it into Kind
     kind load docker-image testhub.baymax.oppoer.me/80390594/olearning-simulator/mysql:0.2.0 
 ```
 
-##### Deploy MySQL to k8s
+#### Deploy MySQL on k8s
 
 vim mysql-kind.yaml
 
@@ -553,7 +548,7 @@ spec:
       targetPort: 3306
 ```
 
-##### Third: Deploy mysql
+### Deploy mysql
 
 ```
 kubectl apply -f mysql-kind.yaml
@@ -575,23 +570,23 @@ mysql-deployment-7f89f86dd6-f5hzg         1/1     Running   1 (26h ago)   26h
 
 MySQL is successfully deployed. Try logging in to verify.
 
-#### Fourth: Deploy Pulsar
+### Step4：Deploy Pulsar
 
-#####  Helm add pulsar repository
+####  Helm add pulsar repository
 
 ```
 helm repo add apache https://pulsar.apache.org/charts
 helm repo update
 ```
 
-##### Git clone the repository.
+#### Git clone the repository.
 
 ```
 git clone https://github.com/apache/pulsar-helm-chart
 cd pulsar-helm-chart
 ```
 
-##### Init
+#### Init
 
 ```
 ./scripts/pulsar/prepare_helm_release.sh \
@@ -600,7 +595,7 @@ cd pulsar-helm-chart
     -c
 ```
 
-##### Install
+#### Install
 
 ```
 helm install \
@@ -609,7 +604,7 @@ helm install \
     pulsar-mini apache/pulsar
 ```
 
-##### Check
+#### Check
 
 ```
 kubectl get pods -n pulsar
@@ -633,7 +628,7 @@ pulsar-mini-toolset-0                                  1/1     Running     0    
 pulsar-mini-zookeeper-0                                1/1     Running 
 ```
 
-##### Expose management services
+#### Expose management services
 
  Expose the service using `kubectl port-forward`
 
@@ -664,7 +659,7 @@ kubectl port-forward --address 0.0.0.0 svc/pulsar-mini-pulsar-manager -n pulsar 
 
 kubectl port-forward --address 0.0.0.0 svc/pulsar-mini-pulsar-manager-admin -n pulsar 7750:7750
 
-##### Create an admin account
+#### Create an admin account
 
 ```
 CSRF_TOKEN=$(curl http://localhost:7750/pulsar-manager/csrf-token)
@@ -687,13 +682,13 @@ Use the following credentials when logging in:
 
 
 
-##### Change the configuration
+#### Change the configuration
 
 ![img](figs/pulsar1.png)
 
 
 
-##### Add namespace : shelf_room
+#### Add namespace : shelf_room
 
 ![img](figs/pulsar2.png)
 
@@ -702,9 +697,9 @@ Use the following credentials when logging in:
 The Pulsar configuration is now complete.
 
 
-#### Resmgr
+### Step5：Deploy Resmgr
 
-##### Build image by using the following Dockerfile
+#### Build image by using the following Dockerfile
 
 vim  Dockerfile
 
@@ -799,7 +794,7 @@ Build the image and load it into Kind
 
 ```
 
-##### Deploy to k8s
+#### Deploy to k8s
 
 vim resmgr.yaml
 
@@ -863,9 +858,9 @@ The successful startup of the Pod here indicates that the resmgr deployment was 
 
 
 
-#### Taskmgr
+### Step6：Deploy Taskmgr
 
-##### Build image
+#### Build image
 
 vim Dockerfile
 
@@ -960,7 +955,7 @@ Build the image and load it into Kind
     kind load docker-image testhub.baymax.oppoer.me/80390594/olearning-simulator/taskmgr:0.2.6 
 ```
 
-##### Deploy to k8s
+#### Deploy to k8s
 
 vim taskmgr.yaml
 
@@ -1025,9 +1020,9 @@ The deployment of taskmgr is successful at this point.
 
 
 
-#### Deviceflow
+### Step7：Deviceflow
 
-##### Build image
+#### Build image
 
 vim Dockerfile
 
@@ -1121,7 +1116,7 @@ Build the image and load it into Kind.
     kind load docker-image testhub.baymax.oppoer.me/80390594/olearning-simulator/deviceflow:0.2.6 
 ```
 
-##### Deploy to k8s
+#### Deploy to k8s
 
 vim deviceflow.yaml
 
