@@ -1,0 +1,7 @@
+# task repo config
+host: "mysql-service"
+user: "root"
+password: ${YOUR_MYSQL_SECRET_ID} 
+port: 3306
+database: "opl"
+

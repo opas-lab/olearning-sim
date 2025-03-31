@@ -1,0 +1,106 @@
+syntax='proto3';
+import "google/protobuf/empty.proto";
+import  "phoneMgr.proto";
+
+enum ServerClusterResStatus {
+  SUCCESS = 0;
+  NOT_ENOUGH_RES = 1;
+  TASKID_NULL = 2;
+  TASK_REPEAT = 3;
+  TASKID_NOT_FOUND = 4;
+  FAIL = 5;
+}
+
+message Resource {
+  ServerClusterResource clusterRes = 1;
+  AllUsersDeviceAvailableResource phoneRes = 2;
+}
+
+message ServerClusterResource {
+  float cores = 1;
+  float mem = 2;
+}
+
+message VMClusterResource {
+  int32 availablePhones = 1;
+}
+
+message PhoneClusterResource {
+  int32 avaiablePhones = 1;
+}
+
+message ResourceMessage {
+  ServerClusterResource  server = 1;
+  VMClusterResource VM = 2;
+  PhoneClusterResource phone = 3;
+}
+
+message ResReq {
+  /* type = 0:cluster and phone, 1:only cluster, 2:only phone */
+  int32 type = 1;
+  ServerClusterReq clusterReq = 2;
+  DeviceResource phoneReq = 3;
+}
+
+message ResRelease {
+  /* type = 0:cluster and phone, 1:only cluster, 2:only phone */
+  int32 type = 1;
+  string taskId = 2;
+}
+
+message ServerClusterReq {
+  string taskId = 1;
+  float cores = 2;
+  float mem = 3;
+}
+
+message RequestStatus {
+  ServerClusterStatus clusterStatus = 1;
+  ActionStatus phoneStatus = 2;
+}
+
+message ReleaseStatus {
+  ServerClusterStatus clusterStatus = 1;
+  ActionStatus phoneStatus = 2;
+}
+
+message ServerClusterStatus {
+  ServerClusterResStatus status = 1;
+}
+
+message ServerClusterDetail {
+  string detail = 1;
+}
+
+service ResourceMgr {
+  // 1.1 服务器资源查询
+  rpc getClusterAvailableResource(google.protobuf.Empty) returns  (ServerClusterResource);
+  // 1.2 服务器资源明细查询 
+  rpc getClusterResourceDetail(google.protobuf.Empty) returns  (ServerClusterDetail);
+  // 1.3 服务器资源申请
+  rpc requestClusterResource(ServerClusterReq) returns (ServerClusterStatus);
+  // 1.4 服务器资源释放
+  rpc releaseClusterResource(ServerClusterReq) returns (ServerClusterStatus);
+  // 1.5 服务器总资源查询
+  rpc getClusterTotalResource(google.protobuf.Empty) returns  (ServerClusterResource);
+
+  rpc getVMResource(google.protobuf.Empty) returns (VMClusterResource);
+
+  rpc getPhoneResource(google.protobuf.Empty) returns (PhoneClusterResource);
+
+  rpc getTotalResource(google.protobuf.Empty) returns (ResourceMessage);
+
+  // 资源查询
+  rpc getResource(google.protobuf.Empty) returns (Resource);
+  // 资源申请
+  rpc requestResource(ResReq) returns (RequestStatus);
+  // 资源释放
+  rpc releaseResource(ResRelease) returns (ReleaseStatus);
+
+  // 集群操作
+  // 集群启动，集群停止
+  // 节点扩容，节点缩减
+  // 等等
+}
+
+// 手机端：提供集群调用的api

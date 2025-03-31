@@ -1,0 +1,17 @@
+# S3 config to upload and download model file
+# ============ local test ============
+S3:
+  aws_access_key_id: ${AWS_S3_ACCESS_KEY_ID}
+  aws_secret_access_key: ${AWS_S3_SCERET_KEY_ID} 
+  region: "ap-southeast-1"
+  endpoint_url: "https://s3.ap-southeast-1.amazonaws.com"
+  bucket_id: ${YOU_S3_BUCKET_ID}
+
+
+# ============= minio configuration =============
+minio:
+  endpoint: ${YOUR_MINIO_IP}
+  accessKey: ${MINIO_ACCESS_KEY_ID}
+  secretKey: ${MINIO_SECRET_KEY_ID} 
+  bucketName: ${YOU_MINIO_BUCKET_ID}
+

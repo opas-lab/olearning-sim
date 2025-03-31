@@ -1,0 +1,5 @@
+classification:
+  train_features: "train_features.csv"
+  train_labels: "train_labels.csv"
+  test_features: "test_features.csv"
+  test_labels: "test_labels.csv"

@@ -1,0 +1,6 @@
+host: "mysql-service"
+user: "root"
+password: ${YOUR_MYSQL_SECRET_ID} 
+port: 3306
+database: "virtually_phone_DB"
+table: "resmgr_table"

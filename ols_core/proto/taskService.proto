@@ -1,0 +1,211 @@
+syntax='proto3';
+import "google/protobuf/empty.proto";
+
+message TaskConfig {
+  string userID = 1;
+  TaskID taskID = 2;
+  Target target = 3;
+  OperatorFlow operatorFlow = 4;
+  LogicalSimulation logicalSimulation = 5;
+  DeviceSimulation deviceSimulation = 6;
+}
+
+message Target {
+  repeated TargetData targetData = 1;
+  int32 priority = 2;
+}
+
+message TargetData {
+  string dataName = 1;
+  string dataPath = 2;
+  bool dataSplitType = 3;
+  FileTransferType dataTransferType = 4;
+  string taskType = 5;
+  TotalSimulation totalSimulation = 6;
+  Allocation allocation = 7;
+}
+
+message TotalSimulation {
+  repeated string deviceTotalSimulation = 1;
+  repeated int32 numTotalSimulation = 2;
+  repeated int32 dynamicNumTotalSimulation = 3;
+}
+
+message Allocation {
+  bool optimization = 1;
+  repeated int32 allocationLogicalSimulation = 2;
+  repeated int32 allocationDeviceSimulation = 3;
+  RunningResponse runningResponse = 4;
+}
+
+message RunningResponse {
+  repeated string deviceRunningResponse = 1;
+  repeated int32 numRunningResponse = 2;
+}
+
+message OperatorFlow {
+  FlowSetting flowSetting = 1;
+  repeated Operator operator = 2;
+}
+
+message FlowSetting {
+  int32 round = 1;
+  OperatorFlowCondition startCondition = 2;
+  OperatorFlowCondition stopCondition = 3;
+}
+
+message OperatorFlowCondition {
+  StrategyCondition logicalSimulationStrategy = 1;
+  StrategyCondition deviceSimulationStrategy = 2;
+}
+
+message StrategyCondition {
+  string strategyCondition = 1;
+  int32 waitInterval = 2;
+  int32 totalTimeout = 3;
+}
+
+message Operator {
+  string name = 1;
+  OperationBehaviorController operationBehaviorController = 2;
+  repeated string input = 3;
+  bool useData = 4;
+  Model model = 5;
+  OperatorSimulationInfo logicalSimulationOperatorInfo = 6;
+  OperatorSimulationInfo deviceSimulationOperatorInfo = 7;
+}
+
+message OperationBehaviorController {
+  bool useController = 1;
+  string strategyBehaviorController = 2;
+  string outboundService = 3;
+}
+
+message Model {
+  bool useModel = 1;
+  bool modelForTrain = 2;
+  FileTransferType modelTransferType = 3;
+  string modelPath = 4;
+  string modelUpdateStyle = 5;
+}
+
+message OperatorSimulationInfo {
+  FileTransferType operatorTransferType = 1;
+  string operatorCodePath = 2;
+  string operatorEntryFile = 3;
+  string operatorParams = 4;
+}
+
+message LogicalSimulation {
+  ComputationUnit computationUnit = 1;
+  repeated ResourceRequest resourceRequestLogicalSimulation = 2;
+}
+
+message ComputationUnit {
+  repeated string devicesUnit = 1;
+  repeated UnitSetting unitSetting = 2;
+}
+
+message UnitSetting {
+  int32 numCpus = 1;
+}
+
+message ResourceRequest {
+  string dataNameResourceRequest = 1;
+  repeated string deviceResourceRequest = 2;
+  repeated int32 numResourceRequest = 3;
+}
+
+message DeviceSimulation {
+  repeated ResourceRequest resourceRequestDeviceSimulation = 1;
+}
+
+message TaskID {
+  string taskID = 1;
+}
+
+message TaskQueue {
+  repeated TaskID tasks = 1;
+}
+
+enum FileTransferType {
+  FILE = 0;
+  HTTP = 1;
+  S3 = 2;
+  MINIO = 3;
+}
+
+enum TaskStatusEnum {
+  SUCCEEDED = 0;
+  PENDING = 1;
+  RUNNING = 2;
+  STOPPED = 3;
+  FAILED = 4;
+  MISSING = 5;
+  UNDONE = 6;
+  QUEUED = 7;
+}
+
+message TaskStatus {
+  TaskStatusEnum taskStatus = 1;
+}
+
+message OperationStatus {
+  bool is_success = 1;
+}
+
+message Scheduler {
+  string scheduler = 1;
+}
+
+message DeviceTaskConfig {
+  string userID = 1;
+  string taskID = 2;
+  repeated DeviceTargetData deviceTargetData = 3;
+  DeviceOperatorFlow deviceOperatorFlow = 4;
+  repeated ResourceRequest resourceRequestDeviceSimulation = 5;
+}
+
+message DeviceTargetData {
+  string dataName = 1;
+  string dataPath = 2;
+  bool dataSplitType = 3;
+  FileTransferType dataTransferType = 4;
+  string taskType = 5;
+  DeviceTotalSimulation deviceTotalSimulation = 6;
+  RunningResponse runningResponse = 7;
+}
+
+message DeviceTotalSimulation {
+  repeated string devices = 1;
+  repeated int32 nums = 2;
+}
+
+message DeviceOperatorFlow {
+  DeviceFlowSetting deviceFlowSetting = 1;
+  repeated DeviceOperator deviceOperator = 2;
+}
+
+message DeviceFlowSetting {
+  int32 round = 1;
+  StrategyCondition deviceStartCondition = 2;
+  StrategyCondition deviceStopCondition = 3;
+}
+
+message DeviceOperator {
+  string name = 1;
+  OperationBehaviorController operationBehaviorController = 2;
+  repeated string input = 3;
+  bool useData = 4;
+  Model model = 5;
+  OperatorSimulationInfo deviceSimulationOperatorInfo = 6;
+}
+
+
+service TaskMgr {
+  rpc submitTask(TaskConfig) returns (OperationStatus);
+  rpc stopTask(TaskID) returns (OperationStatus);
+  rpc getTaskStatus(TaskID) returns (TaskStatus);
+  rpc getTaskQueue(google.protobuf.Empty) returns (TaskQueue);
+  rpc changeScheduler(Scheduler) returns (OperationStatus);
+}
