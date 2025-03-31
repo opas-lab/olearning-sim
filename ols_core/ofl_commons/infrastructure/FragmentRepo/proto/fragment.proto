@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package ofl;
+
+message Metrics{
+  float train_acc_fragment = 1;
+  float train_loss_fragment = 2;
+  repeated int32 train_tp_fragment = 3;
+  repeated int32 train_tn_fragment = 4;
+  repeated int32 train_fp_fragment = 5;
+  repeated int32 train_fn_fragment = 6;
+
+  float test_acc_fragment = 7;
+  float test_loss_fragment = 8;
+  repeated int32 test_tp_fragment = 9;
+  repeated int32 test_tn_fragment = 10;
+  repeated int32 test_fp_fragment = 11;
+  repeated int32 test_fn_fragment = 12;
+
+  int32 thresholds = 13;
+}
+
+message Model{
+  string framework = 1;
+  string payload = 2;
+}
+
+message Fragment{
+  string task_id = 1;
+  int32 training_round = 2;
+  int32 local_train_sample_size = 3;
+  int32 local_test_sample_size = 4;
+
+  Model model = 5;
+  Metrics metrics = 6;
+}
