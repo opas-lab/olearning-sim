@@ -1,0 +1,38 @@
+{
+  "task_id": "",
+  "data_path": "",
+  "model_path": "",
+  apk_path: "",
+  user_id: "",
+
+  "operators":{
+    "operator1": {
+      "name": "",
+      operator_path: "",
+      simulation_params: {
+        number_phones: 100 ,// 仿真机次
+        dynamic_phones: -20, // 端数量动态调整
+        round: 1, //执行轮数
+        resource_request :{
+          cpu: 100,
+          mem: "100g"
+        }
+        concurrency: 100
+      }
+      operator_params: {
+        //单个算子自带的参数
+      }
+    }
+    operator2: {
+      // 第二个算子...
+    }
+    ...
+    operatorN: {
+      //第N个算子
+    }
+  }
+
+  phones：{
+    // 申请的真机，及真机任务资源启动
+  }
+}
